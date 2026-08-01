@@ -1,0 +1,652 @@
+/* ==========================================================================
+   ETERNA.CSS — o nascimento de um girassol, em tela única
+   Sequência: escuridão > caule nasce > folhas brotam > botão fecha-se
+              > grande florescimento > o girassol desperta > o sol nasce
+              > contemplação > a frase
+   ========================================================================== */
+
+:root {
+  --bg-0: #040302;
+  --gold-tip: #fff3c4;
+  --gold-1: #ffd23f;
+  --gold-2: #ffb703;
+  --gold-3: #d9820a;
+  --brown-1: #6b4318;
+  --brown-2: #3a2210;
+  --brown-3: #1c0f06;
+  --cream: #fff6de;
+  --warm-white: #fff3e0;
+  --green-1: #4a7c2f;
+  --green-2: #2e5a1c;
+  --green-dark: #1f3d12;
+
+  --ease-soft: cubic-bezier(.22, 1, .36, 1);
+  --ease-grow: cubic-bezier(.16, 1, .3, 1);   /* cresce rápido no início, desacelera no fim — orgânico */
+  --ease-breathe: cubic-bezier(.45, 0, .55, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  background: var(--bg-0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ==========================================================================
+   CENA
+   ========================================================================== */
+
+.scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 42%, #1a1004 0%, #0c0703 35%, var(--bg-0) 65%, #000000 100%);
+}
+
+/* ==========================================================================
+   PLAYER DE MÚSICA
+   ========================================================================== */
+
+.music-player {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: min(320px, calc(100% - 32px));
+  padding: 20px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 20px rgba(187, 169, 10, 0.99);
+}
+
+.music-info {
+  min-width: 0; /* permite o truncamento do texto abaixo em telas estreitas */
+}
+
+.music-info h3 {
+  overflow: hidden;
+  color: white;
+  font-size: 1rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.music-info p {
+  margin-top: 5px;
+  overflow: hidden;
+  color: rgb(255, 180, 0);
+  font-size: 0.8rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+#playBtn {
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  background: rgb(255, 180, 0);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+#playBtn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgb(255, 180, 0);
+}
+
+/* ---------- halo em duas camadas: nasce lentamente, como um sol ---------- */
+
+.bg-glow {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 130vmin;
+  height: 130vmin;
+  transform: translate(-50%, -50%) scale(0.5);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 178, 3, 0.32) 0%, rgba(255, 178, 3, 0.07) 38%, transparent 70%);
+  filter: blur(26px);
+  opacity: 0.1;
+  transition: opacity 3s var(--ease-soft), transform 3s var(--ease-soft);
+  pointer-events: none;
+  animation: breathe-glow 6.5s var(--ease-breathe) infinite;
+}
+
+.bg-glow-core {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 46vmin;
+  height: 46vmin;
+  transform: translate(-50%, -50%) scale(0.45);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 224, 130, 0.55) 0%, rgba(255, 178, 3, 0.18) 45%, transparent 75%);
+  filter: blur(10px);
+  opacity: 0;
+  transition: opacity 2.6s var(--ease-soft) 0.4s, transform 2.6s var(--ease-soft) 0.4s;
+  pointer-events: none;
+  animation: breathe-core 4.2s var(--ease-breathe) infinite;
+}
+
+@keyframes breathe-glow { 0%, 100% { filter: blur(26px); } 50% { filter: blur(34px); } }
+@keyframes breathe-core { 0%, 100% { opacity: var(--core-op, 0); transform: translate(-50%, -50%) scale(1); }
+                           50% { opacity: calc(var(--core-op, 0) * 0.75); transform: translate(-50%, -50%) scale(1.06); } }
+
+.scene.lit .bg-glow { opacity: 0.9; transform: translate(-50%, -50%) scale(1); }
+.scene.lit .bg-glow-core { --core-op: 1; opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+/* ==========================================================================
+   PARTÍCULAS
+   ========================================================================== */
+
+.particles { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+
+.spark { position: absolute; bottom: -10px; border-radius: 50%; background: var(--gold-1); opacity: 0; }
+
+.spark--dust { box-shadow: 0 0 5px 1px rgba(255, 210, 63, 0.35); filter: blur(0.6px); animation: spark-rise linear forwards; }
+.spark--firefly { box-shadow: 0 0 8px 3px rgba(255, 210, 63, 0.6); animation: spark-rise linear forwards, spark-twinkle 1.6s ease-in-out infinite; }
+.spark--flash { box-shadow: 0 0 10px 4px rgba(255, 230, 150, 0.85); animation: spark-flash ease-out forwards; }
+.spark--soft { filter: blur(3px); box-shadow: 0 0 14px 6px rgba(255, 178, 3, 0.3); animation: spark-rise linear forwards; }
+
+@keyframes spark-rise {
+  0%   { opacity: 0; transform: translateY(0) translateX(0) scale(0.5); }
+  12%  { opacity: 0.9; }
+  88%  { opacity: 0.5; }
+  100% { opacity: 0; transform: translateY(-92vh) translateX(var(--drift, 20px)) scale(1); }
+}
+@keyframes spark-twinkle { 0%, 100% { opacity: 0.9; } 50% { opacity: 0.25; } }
+@keyframes spark-flash {
+  0%   { opacity: 0; transform: scale(0.4) translateY(0); }
+  30%  { opacity: 1; transform: scale(1.1) translateY(-6px); }
+  100% { opacity: 0; transform: scale(0.7) translateY(-30px); }
+}
+
+/* ==========================================================================
+   CONTEÚDO
+   ========================================================================== */
+
+.content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6vh 24px;
+  transform: scale(1);
+  transition: transform 3.4s var(--ease-soft);
+}
+
+/* a câmera aproxima devagar quando o sol nasce — ponto alto da experiência */
+.scene.lit .content { transform: scale(1.1); }
+
+/* ---------- interface inicial: desaparece na escuridão inicial ---------- */
+
+.intro-ui {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 1;
+  max-height: 200px;
+  transform: translateY(0);
+  filter: blur(0);
+  transition: opacity 1.1s var(--ease-soft), transform 1.1s var(--ease-soft),
+              filter 1.1s var(--ease-soft), max-height 1.1s var(--ease-soft);
+}
+
+.scene.dissolving .intro-ui {
+  opacity: 0;
+  transform: translateY(-16px);
+  filter: blur(6px);
+  max-height: 0;
+  margin-bottom: 0;
+  pointer-events: none;
+}
+
+.title { font-size: clamp(22px, 6vw, 27px); font-weight: 700; color: var(--cream); letter-spacing: 0.5px; }
+.title .dot { color: var(--gold-2); }
+
+/* ---------- palco da planta ---------- */
+/* column-reverse: a flor (último no HTML) fica no topo; o caule embaixo dela,
+   exatamente como uma planta real cresce do chão até a flor */
+.flower-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  z-index: 2;
+  opacity: 0;
+  transform: scale(1);
+  transition: opacity 0.9s ease, transform 2.6s var(--ease-soft);
+}
+
+.scene.journey .flower-stage { opacity: 1; }
+.scene.lit .flower-stage { transform: scale(1.05); }
+
+/* ---------- caule (SVG, traçado revelado progressivamente) ---------- */
+
+.stem-wrap {
+  position: relative;
+  width: 75px;
+  height: clamp(80px, 16vh, 118px);
+  z-index: 1;
+  transform-origin: 50% 100%;
+  animation: stem-sway 5s ease-in-out infinite;
+}
+
+@keyframes stem-sway {
+  0%, 100% { transform: rotate(-0.6deg); }
+  50% { transform: rotate(0.6deg); }
+}
+
+.stem-svg { width: 100%; height: 100%; overflow: visible; }
+
+#stemPath {
+  fill: none;
+  stroke: url(#stemGradient);
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 0 rgba(255, 210, 63, 0));
+  transition: filter 2s var(--ease-soft);
+}
+
+.scene.journey #stemPath {
+  filter: drop-shadow(0 0 3px rgba(200, 240, 150, 0.35));
+}
+
+/* ---------- folhas: brotam em duas etapas — pequeno broto, depois se abrem ---------- */
+
+.leaf {
+  position: absolute;
+  top: 20%;
+  width: 40px;
+  height: 25px;
+  background: linear-gradient(135deg, var(--green-1), var(--green-2));
+  border-radius: 0 60% 0 60%;
+  opacity: 0;
+  transform: scale(0.1) rotate(var(--fold, -55deg));
+  box-shadow: 0 0 4px rgba(150, 220, 100, 0.25);
+}
+
+.leaf-left  { left: -20px; transform-origin: right center; --fold: -55deg; }
+.leaf-right { right: -20px; border-radius: 60% 0 60% 0; transform-origin: left center; --fold: 55deg; top: 26%; }
+
+@keyframes leaf-grow {
+  0%   { opacity: 0;   transform: scale(0.1)  rotate(var(--fold, -55deg)); }
+  35%  { opacity: 1;   transform: scale(0.32) rotate(var(--fold, -55deg)); } /* pequeno broto */
+  100% { opacity: 0.9; transform: scale(1)    rotate(0deg); }               /* folha aberta */
+}
+
+.leaf.grow { animation: leaf-grow 1.4s var(--ease-grow) forwards; }
+
+/* respiração contínua, discreta, só depois de já abertas */
+.scene.bud-grown .leaf.grow,
+.scene.blooming .leaf.grow,
+.scene.awake .leaf.grow,
+.scene.lit .leaf.grow {
+  animation: leaf-grow 1.4s var(--ease-grow) forwards, leaf-breathe 4s ease-in-out 1.4s infinite;
+}
+
+@keyframes leaf-breathe {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.04) rotate(1.5deg); }
+}
+
+/* ---------- botão fechado (antes de florescer) ---------- */
+
+.bud {
+  position: absolute;
+  left: 50%;
+  top: 75%;
+  width: 32px;
+  height: 38px;
+  transform: translate(-50%, -50%) scale(0.25);
+  border-radius: 50% 50% 42% 42%;
+  background: radial-gradient(circle at 34% 28%, #6fae3e 0%, #3a6b23 55%, var(--green-dark) 100%);
+  box-shadow: inset 0 -5px 8px rgba(0, 0, 0, 0.35), 0 3px 10px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transition: opacity 0.7s ease, transform 0.9s var(--ease-grow);
+  z-index: 4;
+}
+
+.scene.bud-grown .bud {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  animation: bud-breathe 2.2s ease-in-out 0.9s infinite;
+}
+
+.scene.blooming .bud {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.7);
+  animation: none;
+}
+
+@keyframes bud-breathe {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.07); }
+}
+
+/* ---------- flor ---------- */
+
+.flower {
+  position: relative;
+  width: 208px;
+  height: 200px;
+  z-index: 2;
+  transition: transform 1.3s var(--ease-soft);
+}
+
+/* o girassol gira alguns graus em direção ao observador, como se buscasse luz */
+.scene.awake .flower,
+.scene.lit .flower {
+  transform: rotate(3deg) translateY(-2px);
+}
+
+.petal-layers { position: absolute; inset: 0; }
+
+.petal-anchor {
+  position: absolute;
+  left: 50%;
+  top: 70%;
+  width: 0;
+  height: 0;
+  transform: rotate(var(--angle));
+}
+
+.petal-shape {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 50% 100%;
+  border-radius: 50% 50% 10% 10%;
+  background: linear-gradient(180deg, var(--gold-tip) 0%, var(--gold-1) 32%, var(--gold-2) 68%, var(--gold-3) 100%);
+  box-shadow:
+    inset 1.5px 0 3px rgba(255, 255, 235, 0.35),
+    inset -1.5px 0 3px rgba(140, 75, 0, 0.3),
+    inset 0 -6px 8px rgba(150, 80, 0, 0.25);
+  filter: blur(5px) brightness(var(--bright, 1));
+  transform: translate(-50%, -100%) scale(0.1);
+  opacity: 0;
+  transition: transform 1s var(--ease-soft), opacity 0.6s ease, filter 0.9s ease;
+}
+
+/* ordem visual: internas atrás, intermediárias no meio, externas na frente —
+   mas a ordem de ABERTURA (ver JS: delays) é internas > intermediárias > externas */
+.petal-anchor.layer-inner  { z-index: 1; }
+.petal-anchor.layer-middle { z-index: 2; }
+.petal-anchor.layer-outer  { z-index: 3; }
+
+.scene.blooming .petal-shape,
+.scene.awake .petal-shape,
+.scene.lit .petal-shape {
+  opacity: 1;
+  filter: blur(0) brightness(var(--bright, 1));
+  transform: translate(-50%, -100%) scale(var(--jitter, 1));
+}
+
+.scene.lit .petal-shape {
+  filter: blur(0) brightness(var(--bright, 1)) drop-shadow(0 0 7px rgba(255, 205, 90, 0.4));
+  animation: petal-breathe 4.5s ease-in-out infinite;
+  animation-delay: var(--breathe-delay, 0s);
+}
+
+@keyframes petal-breathe {
+  0%, 100% { transform: translate(-50%, -100%) scale(var(--jitter, 1)); }
+  50%      { transform: translate(-50%, -100%) scale(calc(var(--jitter, 1) * 1.035)); }
+}
+
+/* ---------- miolo: nasce ao final da floração e "ganha vida" ao despertar ---------- */
+
+.seed-head {
+  position: absolute;
+  left: 50%;
+  top: 70%;
+  width: 72px;
+  height: 72px;
+  transform: translate(-50%, -50%) scale(0.3) rotate(-8deg);
+  border-radius: 50%;
+  opacity: 0;
+  filter: blur(4px) brightness(1);
+  transition: transform 0.9s var(--ease-soft) 1.7s, opacity 0.6s ease 1.7s,
+              filter 1.3s ease;
+  z-index: 5;
+}
+
+.scene.blooming .seed-head,
+.scene.awake .seed-head,
+.scene.lit .seed-head {
+  transform: translate(-50%, -50%) scale(1) rotate(0deg);
+  opacity: 1;
+}
+
+/* o miolo "ganha vida": brilho aumenta ao despertar */
+.scene.awake .seed-head,
+.scene.lit .seed-head {
+  filter: blur(0) brightness(1.18) drop-shadow(0 0 10px rgba(255, 200, 90, 0.4));
+}
+
+.scene.lit .seed-head { animation: seed-breathe 4.5s ease-in-out infinite; }
+
+@keyframes seed-breathe {
+  0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+  50%      { transform: translate(-50%, -50%) scale(1.012) rotate(0.4deg); }
+}
+
+.seed-rim {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 26%, var(--brown-1) 0%, var(--brown-2) 45%, var(--brown-3) 78%, #0d0602 100%);
+  box-shadow: inset 0 8px 16px rgba(0, 0, 0, 0.65), inset 0 -5px 10px rgba(255, 180, 60, 0.1), 0 6px 20px rgba(0, 0, 0, 0.55);
+}
+
+.seed-rim::before {
+  content: '';
+  position: absolute;
+  left: 22%;
+  top: 18%;
+  width: 34%;
+  height: 22%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255, 210, 130, 0.22), transparent 70%);
+  filter: blur(2px);
+}
+
+.seed-spiral { position: absolute; inset: 6px; border-radius: 50%; overflow: hidden; }
+
+.seed-dot {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #a9713a 0%, #5a3714 65%, #2a1608 100%);
+  box-shadow: 0 0.5px 0.5px rgba(255, 200, 120, 0.18);
+}
+
+.flower::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 105%;
+  height: 105%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 210, 63, 0.42), transparent 70%);
+  opacity: 0;
+  filter: blur(16px);
+  transition: opacity 2.4s var(--ease-soft);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.scene.lit .flower::after { opacity: 1; }
+
+/* ---------- interface inferior: some na escuridão inicial ---------- */
+
+.bottom-ui {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 300px;
+  margin-top: 30px;
+  opacity: 1;
+  max-height: 120px;
+  transform: translateY(0);
+  filter: blur(0);
+  transition: opacity 1.1s var(--ease-soft) 0.1s, transform 1.1s var(--ease-soft) 0.1s,
+              filter 1.1s var(--ease-soft) 0.1s, max-height 1.1s var(--ease-soft) 0.1s;
+}
+
+.scene.dissolving .bottom-ui {
+  opacity: 0;
+  transform: translateY(16px);
+  filter: blur(6px);
+  max-height: 0;
+  margin-top: 0;
+  pointer-events: none;
+}
+
+.progress-track { width: 100%; height: 3px; background: rgba(255, 255, 255, 0.08); border-radius: 4px; overflow: hidden; }
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--gold-3), var(--gold-1));
+  border-radius: 4px;
+  transition: width 5s var(--ease-breathe);
+}
+
+.bloom-btn {
+  margin-top: 20px;
+  padding: 14px 20px;
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 246, 222, 0.45);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: not-allowed;
+  transition: background 0.5s ease, color 0.5s ease, box-shadow 0.5s ease, transform 0.15s ease;
+}
+
+.bottom-ui.ready .bloom-btn {
+  cursor: pointer;
+  color: #241a05;
+  background: linear-gradient(90deg, var(--gold-3), var(--gold-1));
+  box-shadow: 0 0 22px -2px rgba(255, 178, 3, 0.55);
+  animation: btn-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes btn-pulse {
+  0%, 100% { box-shadow: 0 0 18px -2px rgba(255, 178, 3, 0.45); transform: scale(1); }
+  50% { box-shadow: 0 0 30px 2px rgba(255, 178, 3, 0.7); transform: scale(1.015); }
+}
+
+.bloom-btn:active { transform: scale(0.97); }
+
+/* ---------- final: frase + assinatura, como uma lembrança surgindo ---------- */
+
+.finale {
+  position: absolute;
+  left: 50%;
+  bottom: 9%;
+  transform: translateX(-50%) translateY(18px);
+  width: 88%;
+  max-width: 340px;
+  text-align: center;
+  opacity: 0;
+  filter: blur(12px);
+  transition: opacity 2.8s var(--ease-soft), transform 2s var(--ease-soft), filter 2.8s var(--ease-soft);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.scene.finale-shown .finale { opacity: 1; transform: translateX(-50%) translateY(0); filter: blur(0); }
+
+.finale-phrase {
+  font-family: 'Palatino Linotype', 'Book Antiqua', Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(16px, 4.4vw, 19px);
+  line-height: 1.65;
+  letter-spacing: 0.2px;
+  color: var(--warm-white);
+  text-shadow: 0 0 22px rgba(255, 210, 63, 0.32);
+}
+
+.finale-signature {
+  margin-top: 18px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-size: 13px;
+  letter-spacing: 0.6px;
+  color: rgba(255, 210, 63, 0.55);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 1.4s var(--ease-soft), transform 1.4s var(--ease-soft);
+  transition-delay: 1.2s;
+}
+
+.scene.finale-shown .finale-signature { opacity: 1; transform: translateY(0); }
+
+/* ==========================================================================
+   RESPONSIVIDADE
+   ========================================================================== */
+
+@media (max-width: 380px) {
+  .flower { width: 172px; height: 172px; }
+  .content { padding: 5vh 18px; }
+
+  .music-player { top: 16px; gap: 10px; padding: 12px 16px; }
+  .music-info h3 { font-size: 0.85rem; }
+  .music-info p { font-size: 0.7rem; }
+  #playBtn { width: 40px; height: 40px; font-size: 0.85rem; }
+
+  .bloom-btn { padding: 12px 16px; font-size: clamp(11px, 3.3vw, 12.5px); letter-spacing: 0.6px; }
+}
+
+@media (min-height: 800px) {
+  .flower { width: 230px; height: 230px; }
+}
+
+@media (min-width: 481px) {
+  .scene { border-radius: 28px; box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6); height: 92vh; max-height: 860px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.3s !important;
+  }
+}

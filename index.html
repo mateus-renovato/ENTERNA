@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Eterna.css — O nascimento de um girassol</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Cena única: tudo acontece aqui, sem trocar de página -->
+  <div class="scene" id="scene">
+
+    <div class="music-player">
+      <div class="music-info">
+        <h3>Trevo (Tu)</h3>
+        <p>ANAVITÓRIA ft. Tiago Iorc</p>
+      </div>
+
+      <button id="playBtn" aria-label="Pausar ou tocar música">❚❚</button>
+
+      <audio id="audio" loop autoplay>
+        <source src="Trevo (Tu) .mp3" type="audio/mp3" />
+      </audio>
+    </div>
+
+    <!-- Halo dourado atrás da flor: nasce como um sol, no final da jornada -->
+    <div class="bg-glow" id="bgGlow"></div>
+    <div class="bg-glow-core" id="bgGlowCore"></div>
+
+    <!-- Vagalumes / poeira luminosa flutuando -->
+    <div class="particles" id="particles"></div>
+
+    <div class="content">
+
+      <!-- ===== Interface inicial (desaparece na etapa 1) ===== -->
+      <div class="intro-ui" id="introUI">
+        <h1 class="title">Eterna<span class="dot">.css</span></h1>
+      </div>
+
+      <!-- ===== A planta: nasce do zero após a escuridão ===== -->
+      <div class="flower-stage" id="flowerStage">
+
+        <!-- caule desenhado em SVG: cresce revelando o traçado, não com scale -->
+        <div class="stem-wrap" id="stemWrap">
+          <div class="leaf leaf-left" id="leafLeft"></div>
+          <div class="leaf leaf-right" id="leafRight"></div>
+          <svg class="stem-svg" viewBox="0 0 40 140" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="stemGradient" x1="0" y1="140" x2="0" y2="0" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#1f3d12" />
+                <stop offset="100%" stop-color="#8fd15c" />
+              </linearGradient>
+            </defs>
+            <path id="stemPath" d="M20,140 C15,115 27,95 19,70 C13,50 26,30 20,6" />
+          </svg>
+        </div>
+
+        <div class="flower" id="flower">
+          <div class="bud" id="bud"></div>
+          <div class="petal-layers" id="petalLayers"></div>
+          <div class="seed-head">
+            <div class="seed-spiral" id="seedSpiral"></div>
+            <div class="seed-rim"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Interface inferior (some na etapa 1) ===== -->
+      <div class="bottom-ui" id="bottomUI">
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <button class="bloom-btn" id="bloomBtn" disabled>Aguardando florescer...</button>
+      </div>
+
+      <!-- ===== Final: frase + assinatura (última etapa) ===== -->
+      <div class="finale" id="finale">
+        <p class="finale-phrase" id="finalePhrase">Mesmo nas noites mais escuras, você continua sendo a minha luz.</p>
+        <p class="finale-signature" id="finaleSignature">Com carinho o seu admirador secretor 🌻</p>
+      </div>
+
+    </div>
+  </div>
+
+<script src="script.js"></script>
+</body>
+</html>
